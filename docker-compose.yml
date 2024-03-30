@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  blog-database:
+    image: postgres:16.2
+    environment:
+      POSTGRES_DB: blogdb
+      POSTGRES_USER: blogadm
+      POSTGRES_PASSWORD: admin123
+    volumes:
+      - /vmount/postgres_data:/var/lib/postgresql/data
+
+    ports:
+      - "5234:5232"
+
+  web-pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    volumes:
+      - /vmount/pgadmin_data:/var/lib/pgadmin/storage
+
+  blog-web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - blog-database
+
+volumes:
+  postgres_data:
